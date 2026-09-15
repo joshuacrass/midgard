@@ -279,6 +279,37 @@ Small scripts are:
 
 ---
 
+# Decision 010
+
+## Title
+
+Coding Agents Use Native Installers
+
+## Date
+
+2026-09-15
+
+## Status
+
+Accepted
+
+## Decision
+
+Claude Code and Codex are installed with their vendors' native installers into `~/.local/bin`, pinned to the versions in `config/versions.sh`.
+
+They are not installed as global npm packages.
+
+The original Midgard installed both with `npm install -g` inside the mise-managed Node. It was migrated to the native installers on 2026-09-15 so the live machine matches a rebuild.
+
+## Why
+
+- agents do not disappear when the pinned Node version changes
+- the live machine and a rebuild use the same layout
+- follows each vendor's recommended installation
+- keeps global npm packages to a minimum
+
+---
+
 # Future Decisions
 
 Future architecture decisions should be added to this document rather than modifying historical entries.

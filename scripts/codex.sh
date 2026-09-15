@@ -2,7 +2,6 @@
 source "$(dirname -- "${BASH_SOURCE[0]}")/lib.sh"
 source "$ROOT/config/versions.sh"
 check_host
-node_path
 if command -v codex >/dev/null; then
     say "Existing Codex retained at $(command -v codex); baseline $CODEX_VERSION."
 else
