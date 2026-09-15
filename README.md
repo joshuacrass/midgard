@@ -17,7 +17,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for the design and [DECISIONS.md](DECISIO
 | Languages | Node 24.21.0, Go 1.27.1, Python 3.13.15 |
 | JavaScript package manager | Corepack / Yarn 4.18.0 |
 | Coding agents | Claude Code 2.1.272; Codex 0.154.0 |
-| Git | Default branch `dev`; GitHub CLI; SSH authentication |
+| Git | Default branch `dev`, editor `vi`, `fetch.prune`, `rerere.enabled`; GitHub CLI; SSH authentication |
 
 Language versions are pinned in `config/mise/config.toml`; installer versions are in `config/versions.sh`. Existing mise and agent installations are retained, even if their versions differ. Fresh agent installations use the vendors' native installers, avoiding global npm installs. Ubuntu, Docker, GitHub CLI, and Tailscale packages use their configured repositories and are not version-pinned. Claude's normal update behavior remains unchanged.
 

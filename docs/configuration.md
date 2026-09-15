@@ -17,6 +17,8 @@ Fish universal variables are deliberately excluded: `fish_variables` is shell-ma
 
 Codex rewrites its own `config.toml` (for example when a project is trusted), so the repository file only seeds a new host. An existing file is reported as `KEEP` and is not compared or replaced, even with `--replace-config`. To adopt a changed repository preference on an existing host, edit `~/.codex/config.toml` by hand.
 
+Global Git settings (`init.defaultBranch`, `core.editor`, `fetch.prune`, `rerere.enabled`) are listed in `scripts/dotfiles.sh`. Each is set only when unset; a different existing value is reported as `PRESERVE` and left alone. Git identity is never set by bootstrap.
+
 ## Comparing and adopting changes
 
 Compare only reviewed, shareable files; do not paste authentication files into logs. For example:
