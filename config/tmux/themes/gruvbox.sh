@@ -1,0 +1,12 @@
+# Gruvbox Dark
+NAME="Gruvbox Dark"
+BG=#282828
+SURFACE=#3c3836
+EDGE=#504945
+DIM=#928374
+TEXT=#ebdbb2
+ACCENT=#83a598
+GREEN=#b8bb26
+AMBER=#fabd2f
+PEACH=#fe8019
+RED=#fb4934

@@ -1,0 +1,12 @@
+# Dracula
+NAME="Dracula"
+BG=#282a36
+SURFACE=#44475a
+EDGE=#6272a4
+DIM=#6272a4
+TEXT=#f8f8f2
+ACCENT=#bd93f9
+GREEN=#50fa7b
+AMBER=#f1fa8c
+PEACH=#ffb86c
+RED=#ff5555

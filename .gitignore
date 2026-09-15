@@ -1,0 +1,28 @@
+# Private configuration and authentication
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+credentials*
+*credentials.json
+auth.json
+secrets/
+private/
+.ssh/
+.claude/
+.codex/
+# Runtime state and local backups
+*.log
+*.bak
+*.orig
+*.swp
+.DS_Store
+backups/
+node_modules/
+.yarn/
+__pycache__/
+fish_variables
+settings.local.json

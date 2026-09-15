@@ -1,0 +1,12 @@
+# Rosé Pine
+NAME="Rosé Pine"
+BG=#191724
+SURFACE=#1f1d2e
+EDGE=#26233a
+DIM=#6e6a86
+TEXT=#e0def4
+ACCENT=#c4a7e7
+GREEN=#9ccfd8
+AMBER=#f6c177
+PEACH=#ebbcba
+RED=#eb6f92
