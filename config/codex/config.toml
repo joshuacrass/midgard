@@ -1,0 +1,8 @@
+# Shareable Codex preferences, seeded only when ~/.codex/config.toml is missing.
+# Codex adds machine-specific entries (project trust, UI state) to the live file.
+service_tier = "fast"
+approvals_reviewer = "auto_review"
+
+[tui]
+status_line = ["model-with-reasoning", "current-dir", "git-branch", "approval-mode", "context-remaining", "five-hour-limit"]
+status_line_use_colors = true

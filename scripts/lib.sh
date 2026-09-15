@@ -37,6 +37,7 @@ deploy() {
     local args=("$ROOT/scripts/deploy-config.py" "$1" "$2" --mode "$MIDGARD_MODE")
     [[ $MIDGARD_REPLACE_CONFIG == 1 ]] && args+=(--replace)
     [[ ${3:-} == merge-json ]] && args+=(--merge-json)
+    [[ ${3:-} == create-only ]] && args+=(--create-only)
     python3 "${args[@]}"
 }
 node_path() {

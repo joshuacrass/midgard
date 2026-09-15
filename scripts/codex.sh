@@ -8,4 +8,4 @@ else
     export CODEX_NON_INTERACTIVE=1
     vendor_install https://chatgpt.com/codex/install.sh sh --release "$CODEX_VERSION"
 fi
-say 'Codex authentication is manual. No Codex credentials or runtime configuration are copied.'
+say 'Codex authentication is manual. Preferences are seeded by the dotfiles step; credentials are never copied.'

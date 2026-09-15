@@ -27,6 +27,8 @@ def main():
     parser.add_argument('--mode', choices=['dry-run', 'apply'], default='dry-run')
     parser.add_argument('--replace', action='store_true')
     parser.add_argument('--merge-json', action='store_true')
+    # For files the application rewrites itself: seed once, private, never replaced.
+    parser.add_argument('--create-only', action='store_true')
     args = parser.parse_args()
     src, dst = args.source, args.destination
     data = src.read_bytes()
@@ -35,6 +37,9 @@ def main():
     exists = dst.exists()
     if exists and not dst.is_file():
         raise SystemExit(f'Not a regular file: {dst}')
+    if args.create_only and exists:
+        print(f'KEEP {dst}: application-managed; created only when missing')
+        return
     if args.merge_json:
         desired = json.loads(data)
         if exists:
@@ -44,7 +49,7 @@ def main():
                 print(f'OK {dst}')
                 return
         data = (json.dumps(desired, indent=2) + '\n').encode()
-    mode = (dst if args.merge_json and exists else src).stat().st_mode & 0o777
+    mode = 0o600 if args.create_only else (dst if args.merge_json and exists else src).stat().st_mode & 0o777
     if exists and dst.read_bytes() == data and dst.stat().st_mode & 0o777 == mode:
         print(f'OK {dst}')
         return

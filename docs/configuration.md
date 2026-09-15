@@ -11,8 +11,11 @@ Captured from the working Midgard server on 2026-09-15.
 | `config/claude/statusline.sh` | `~/.claude/statusline.sh` | Exact copy; executable |
 | `config/claude/hooks/confirm-push-merge.sh` | `~/.claude/hooks/confirm-push-merge.sh` | Exact copy; executable |
 | `config/claude/settings.json` | `~/.claude/settings.json` | Existing UI/statusline preferences, plus hook registration |
+| `config/codex/config.toml` | `~/.codex/config.toml` | Shareable preferences only; created 0600 when missing, never replaced |
 
-Fish universal variables are deliberately excluded: `fish_variables` is shell-managed state. The captured startup file provides mise activation; existing local universal variables remain untouched. Codex account/configuration state and Claude project/runtime directories are not copied.
+Fish universal variables are deliberately excluded: `fish_variables` is shell-managed state. The captured startup file provides mise activation; existing local universal variables remain untouched. Codex credentials, history, project trust entries, and UI state are not copied, nor are Claude project/runtime directories.
+
+Codex rewrites its own `config.toml` (for example when a project is trusted), so the repository file only seeds a new host. An existing file is reported as `KEEP` and is not compared or replaced, even with `--replace-config`. To adopt a changed repository preference on an existing host, edit `~/.codex/config.toml` by hand.
 
 ## Comparing and adopting changes
 

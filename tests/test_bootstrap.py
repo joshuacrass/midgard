@@ -50,6 +50,15 @@ class DeployTests(unittest.TestCase):
         self.assertEqual(backups[0].stat().st_mode & 0o777, 0o600)
         self.assertEqual(self.dst.read_text(), 'new\n')
 
+    def test_create_only_seeds_private_file_and_never_replaces(self):
+        self.deploy('--mode', 'apply', '--create-only')
+        self.assertEqual(self.dst.read_text(), 'new\n')
+        self.assertEqual(self.dst.stat().st_mode & 0o777, 0o600)
+        self.dst.write_text('app rewrote this\n')
+        self.assertIn('KEEP', self.deploy('--mode', 'apply', '--replace', '--create-only'))
+        self.assertEqual(self.dst.read_text(), 'app rewrote this\n')
+        self.assertFalse((self.home / '.local/state/midgard/backups').exists())
+
     def test_symlink_refused_even_with_replace(self):
         self.dst.parent.mkdir(parents=True)
         self.dst.symlink_to(self.src)
