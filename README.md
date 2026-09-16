@@ -32,6 +32,18 @@ This reproduces the configuration and tool baseline, not a byte-identical OS ima
 
 Bootstrap does not configure SSH, router forwarding, addresses, disks, ESXi, or Tailscale identity. Prepare SSH access during OS installation. It does not change the login shell or authenticate accounts.
 
+### OS installation checklist
+
+Bootstrap depends on these installer choices and never changes them:
+
+- **Hostname `midgard`.** The Tailscale MagicDNS name derives from it. Remove the previous Midgard node in the Tailscale admin console before authenticating the rebuilt machine, otherwise it becomes `midgard-1`.
+- **Your normal user in the `sudo` group.** Bootstrap runs as that user and calls `sudo` for packages and services. Do not enable a root login.
+- **SSH public key imported during installation.** Ubuntu records the installer's password-authentication choice in `/etc/ssh/sshd_config.d/50-cloud-init.conf`; confirm password authentication is disabled after the first login.
+- **No snaps from the "Featured Server Snaps" screen.** Docker comes from Docker's repository; the docker step refuses to proceed beside a Docker snap.
+- **OpenSSH server enabled.** The working host also runs `unattended-upgrades` and `ufw`, both Ubuntu defaults. Bootstrap manages neither; record the firewall rules with `sudo ufw status verbose` and restore them by hand.
+- **Timezone `Etc/UTC`, locale `en_US.UTF-8`.** These are the captured values; nothing in the repository depends on them.
+- **Install Git after the first login:** `sudo apt-get install -y git`. Python 3.12 is already present on Ubuntu Server.
+
 ## Fresh installation
 
 Run each step after verifying the previous one succeeds. Git and Python can be installed with Ubuntu's package manager if missing.
@@ -90,16 +102,28 @@ Replacement creates a private backup under `~/.local/state/midgard/backups/` fir
 
 Complete these one at a time:
 
-1. **New Tailscale machine:** run `sudo tailscale up` and authenticate in the browser. Verify tailnet access before relying on it. Do not reauthenticate or reset a working Midgard identity.
+1. **New Tailscale machine:** remove the old node in the admin console, then run `sudo tailscale up` and authenticate in the browser. Verify tailnet access before relying on it. Do not reauthenticate or reset a working Midgard identity.
 2. **Docker:** log out and back in if the docker group was newly added. Verify with `docker info`; optionally run `docker run --rm hello-world` (downloads and runs a container).
 3. **Fish:** verify `fish --version`, then run `chsh -s /usr/bin/fish` if it is not already your login shell. Reconnect. The managed configuration adds `~/.local/bin` and activates mise.
 4. **Git:** set your own `user.name` and `user.email`; these are not stored here.
-5. **GitHub:** run `gh auth login --git-protocol ssh`. Register or restore your SSH key privately and verify GitHub access. Then change this checkout's origin to `git@github.com:joshuacrass/midgard.git` if it was cloned over HTTPS.
+5. **GitHub:** run `gh auth login` and choose SSH as the Git protocol. Register or restore your SSH key privately and verify GitHub access. Then change this checkout's origin to `git@github.com:joshuacrass/midgard.git` if it was cloned over HTTPS.
 6. **Claude Code:** run `claude` and complete authentication. Verify the push/merge confirmation hook is registered in settings before allowing agent Git operations.
 7. **Codex:** run `codex` and choose Sign in with ChatGPT. Complete the offered authentication flow.
 8. **tmux:** start a new session with `tmux new -s dev`. Existing sessions are preserved by bootstrap.
 
 Credentials, agent sessions/history, SSH keys, `.env` files, and Tailscale state are never captured. Store private recovery material separately.
+
+### Private material to back up
+
+Bootstrap recreates everything else; only these need your own backup or re-creation:
+
+- `~/.ssh/`: keys, `config`, and `authorized_keys`. Alternatively generate a new key and register it with GitHub.
+- `~/.config/gh/hosts.yml`: GitHub CLI token. Alternatively run `gh auth login` again.
+- `~/.claude/.credentials.json` and `~/.codex/auth.json`: agent sessions. Alternatively authenticate again.
+- `~/.claude/settings.mac.json`: Mac-side Claude settings kept alongside the server ones; not deployed by bootstrap.
+- `~/development/`: repositories. Re-clone from GitHub if nothing is unpushed.
+- Docker volumes: list with `docker volume ls`; back up any that hold data you cannot rebuild.
+- Tailscale identity: not portable. Authenticate the new machine as described above.
 
 ## Recovery
 
