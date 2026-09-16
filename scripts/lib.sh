@@ -15,9 +15,11 @@ run() {
     if [[ $MIDGARD_MODE == apply ]]; then "$@"; fi
 }
 check_host() {
-    # shellcheck disable=SC1091
-    source /etc/os-release
-    [[ $ID == ubuntu && $VERSION_ID == 24.04 ]] || die 'Requires Ubuntu 24.04 LTS.'
+    local id version_id
+    # Read os-release in a subshell so its NAME/VERSION/ID variables stay out of the steps.
+    # shellcheck disable=SC2153 # ID and VERSION_ID are defined by os-release.
+    read -r id version_id < <(. /etc/os-release && printf '%s %s\n' "$ID" "$VERSION_ID")
+    [[ $id == ubuntu && $version_id == 24.04 ]] || die 'Requires Ubuntu 24.04 LTS.'
     [[ $(uname -m) == x86_64 || $(uname -m) == aarch64 ]] || die 'Requires x86_64 or aarch64.'
     [[ $EUID -ne 0 ]] || die 'Run as your normal login user, not root or sudo.'
 }
@@ -82,3 +84,5 @@ vendor_install() {
     "$shell" "$tmp" "$@"
     rm -- "$tmp"
 }
+# Every step and bootstrap.sh source this file, so the host check runs exactly once per process.
+check_host

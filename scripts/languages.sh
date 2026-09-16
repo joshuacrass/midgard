@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 source "$(dirname -- "${BASH_SOURCE[0]}")/lib.sh"
-check_host
 while read -r tool version; do
     if command -v mise >/dev/null && mise where "$tool@$version" >/dev/null 2>&1; then
         say "$tool@$version already installed."

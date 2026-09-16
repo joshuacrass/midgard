@@ -28,7 +28,6 @@ for step in "${selected[@]}"; do
     [[ " ${steps[*]} " == *" $step "* ]] || { echo "Unknown step: $step" >&2; exit 2; }
 done
 source "$ROOT/scripts/lib.sh"
-check_host
 cd "$HOME"
 for step in "${steps[@]}"; do
     if ((${#selected[@]})) && [[ " ${selected[*]} " != *" $step "* ]]; then continue; fi

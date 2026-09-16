@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 source "$(dirname -- "${BASH_SOURCE[0]}")/lib.sh"
 source "$ROOT/config/versions.sh"
-check_host
 node_path
 if ! command -v corepack >/dev/null; then
     if [[ $MIDGARD_MODE == dry-run ]]; then

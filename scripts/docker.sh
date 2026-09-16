@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 source "$(dirname -- "${BASH_SOURCE[0]}")/lib.sh"
-check_host
 for package in docker.io docker-compose docker-compose-v2 docker-doc podman-docker containerd runc; do
     installed "$package" && die "Conflicting $package is installed; manual review required. Nothing removed."
 done

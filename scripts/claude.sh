@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 source "$(dirname -- "${BASH_SOURCE[0]}")/lib.sh"
 source "$ROOT/config/versions.sh"
-check_host
 if command -v claude >/dev/null; then
     say "Existing Claude retained at $(command -v claude); baseline $CLAUDE_VERSION."
 else
