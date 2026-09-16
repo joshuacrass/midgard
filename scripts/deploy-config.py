@@ -2,6 +2,7 @@
 """Compare before writing; preserve conflicts unless explicitly requested."""
 import argparse
 import datetime
+import difflib
 import json
 import os
 from pathlib import Path
@@ -20,6 +21,20 @@ def merge(existing, desired):
     return desired
 
 
+def show_diff(dst, data, merge_json):
+    if merge_json:
+        print('  (JSON merge result not shown; compare the file by hand)')
+        return
+    try:
+        old = dst.read_text().splitlines(keepends=True)
+        new = data.decode().splitlines(keepends=True)
+    except UnicodeDecodeError:
+        print('  (binary content not shown)')
+        return
+    for line in difflib.unified_diff(old, new, f'{dst} (current)', f'{dst} (repository)'):
+        print('  ' + line, end='' if line.endswith('\n') else '\n')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('source', type=Path)
@@ -29,6 +44,8 @@ def main():
     parser.add_argument('--merge-json', action='store_true')
     # For files the application rewrites itself: seed once, private, never replaced.
     parser.add_argument('--create-only', action='store_true')
+    # Show what PRESERVE hides. Plain text only: merged JSON may hold private local values.
+    parser.add_argument('--diff', action='store_true')
     args = parser.parse_args()
     src, dst = args.source, args.destination
     data = src.read_bytes()
@@ -43,7 +60,10 @@ def main():
     if args.merge_json:
         desired = json.loads(data)
         if exists:
-            existing = json.loads(dst.read_bytes())
+            try:
+                existing = json.loads(dst.read_bytes())
+            except ValueError as error:
+                raise SystemExit(f'Existing {dst} is not valid JSON ({error}); repair it before merging')
             desired = merge(existing, desired)
             if desired == existing:
                 print(f'OK {dst}')
@@ -55,6 +75,8 @@ def main():
         return
     if exists and not args.replace:
         print(f'PRESERVE {dst}: differs; review before --replace-config')
+        if args.diff:
+            show_diff(dst, data, args.merge_json)
         return
     print(f'{"BACKUP + UPDATE" if exists else "CREATE"} {dst}')
     if args.mode == 'dry-run':
@@ -62,7 +84,10 @@ def main():
     if exists:
         root = Path.home() / '.local/state/midgard/backups'
         stamp = datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%S.%fZ')
-        relative = dst.absolute().relative_to(Path.home())
+        try:
+            relative = dst.absolute().relative_to(Path.home())
+        except ValueError:
+            raise SystemExit(f'Refusing to replace {dst}: backups cover files under {Path.home()} only')
         backup = root / stamp / relative
         backup.parent.mkdir(parents=True, mode=0o700)
         shutil.copy2(dst, backup)

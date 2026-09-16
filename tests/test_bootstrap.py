@@ -53,6 +53,36 @@ class DeployTests(unittest.TestCase):
         self.assertEqual(backups[0].stat().st_mode & 0o777, 0o600)
         self.assertEqual(self.dst.read_text(), 'new\n')
 
+    def test_diff_shows_plain_text_but_never_json(self):
+        self.dst.parent.mkdir(parents=True)
+        self.dst.write_text('old\n')
+        self.assertNotIn('-old', self.deploy())
+        out = self.deploy('--diff')
+        self.assertIn('-old', out)
+        self.assertIn('+new', out)
+        self.dst.write_text(json.dumps({'env': {'SECRET': 'local-only'}}))
+        self.src.write_text(json.dumps({'theme': 'dark'}))
+        out = self.deploy('--diff', '--merge-json')
+        self.assertIn('PRESERVE', out)
+        self.assertNotIn('local-only', out)
+
+    def test_errors_are_messages_not_tracebacks(self):
+        self.dst.parent.mkdir(parents=True)
+        self.dst.write_text('not json')
+        self.src.write_text('{}')
+        result = subprocess.run([PYTHON, str(ROOT / 'scripts/deploy-config.py'), str(self.src), str(self.dst),
+                                 '--merge-json'], env=self.env, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 1)
+        self.assertNotIn('Traceback', result.stderr)
+        outside = Path(tempfile.mkdtemp()) / 'settings'
+        self.addCleanup(outside.unlink)
+        outside.write_text('old\n')
+        result = subprocess.run([PYTHON, str(ROOT / 'scripts/deploy-config.py'), str(self.src), str(outside),
+                                 '--mode', 'apply', '--replace'], env=self.env, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 1)
+        self.assertNotIn('Traceback', result.stderr)
+        self.assertEqual(outside.read_text(), 'old\n')
+
     def test_create_only_seeds_private_file_and_never_replaces(self):
         self.deploy('--mode', 'apply', '--create-only')
         self.assertEqual(self.dst.read_text(), 'new\n')

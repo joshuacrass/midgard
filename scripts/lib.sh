@@ -4,6 +4,7 @@ set -euo pipefail
 ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 MIDGARD_MODE=${MIDGARD_MODE:-dry-run}
 MIDGARD_REPLACE_CONFIG=${MIDGARD_REPLACE_CONFIG:-0}
+MIDGARD_DIFF=${MIDGARD_DIFF:-0}
 [[ $MIDGARD_MODE == apply || $MIDGARD_MODE == dry-run ]] || { echo 'Invalid mode' >&2; exit 2; }
 export PATH="$HOME/.local/bin:$PATH"
 # System interpreter: a fresh host has no mise Python, so never rely on the active shell's python3.
@@ -40,6 +41,7 @@ service_on() {
 deploy() {
     local args=("$ROOT/scripts/deploy-config.py" "$1" "$2" --mode "$MIDGARD_MODE")
     [[ $MIDGARD_REPLACE_CONFIG == 1 ]] && args+=(--replace)
+    [[ $MIDGARD_DIFF == 1 ]] && args+=(--diff)
     [[ ${3:-} == merge-json ]] && args+=(--merge-json)
     [[ ${3:-} == create-only ]] && args+=(--create-only)
     "$PYTHON" "${args[@]}"

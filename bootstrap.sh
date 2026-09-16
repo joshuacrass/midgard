@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-export MIDGARD_MODE=dry-run MIDGARD_REPLACE_CONFIG=0
+export MIDGARD_MODE=dry-run MIDGARD_REPLACE_CONFIG=0 MIDGARD_DIFF=0
 steps=(system docker mise languages yarn github tailscale claude codex fish tmux dotfiles)
 sudo_steps=(system docker github tailscale)
 selected=()
@@ -10,16 +10,18 @@ while (($#)); do
         --dry-run) MIDGARD_MODE=dry-run ;;
         --apply) MIDGARD_MODE=apply ;;
         --replace-config) MIDGARD_REPLACE_CONFIG=1 ;;
+        --diff) MIDGARD_DIFF=1 ;;
         --only)
             shift
             [[ $# -gt 0 && -n $1 ]] || { echo '--only requires a comma-separated step list' >&2; exit 2; }
             IFS=, read -r -a selected <<< "$1"
             ;;
         --help|-h)
-            echo 'Usage: ./bootstrap.sh [--dry-run|--apply] [--only step,...] [--replace-config]'
+            echo 'Usage: bash bootstrap.sh [--dry-run|--apply] [--only step,...] [--replace-config] [--diff]'
             echo "Steps (dependency order): ${steps[*]}"
             echo 'Default: dry-run. --only does not automatically install dependencies.'
             echo '--replace-config backs up conflicting files before applying repository configuration.'
+            echo '--diff shows how preserved plain-text files differ from the repository.'
             exit 0 ;;
         *) echo "Unknown option: $1" >&2; exit 2 ;;
     esac
