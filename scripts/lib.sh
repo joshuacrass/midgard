@@ -55,6 +55,15 @@ for name, version in tomllib.load(open(sys.argv[1], 'rb'))['tools'].items():
 PY
 }
 pinned_version() { pinned_tools | awk -v tool="$1" '$1 == tool { print $2 }'; }
+# Warn when an npm global would shadow a native ~/.local/bin install in interactive shells,
+# where mise puts the Node bin directory first (Decision 010).
+native_shadowed() {
+    local command=$1 package=$2 found
+    node_path
+    found=$(command -v "$command" || true)
+    [[ -n $found && $found != "$HOME/.local/bin/$command" ]] || return 0
+    say "PRESERVE $found shadows the native install; remove it with: npm uninstall -g $package"
+}
 node_path() {
     if command -v mise >/dev/null; then
         local p

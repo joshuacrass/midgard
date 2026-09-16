@@ -6,4 +6,5 @@ if command -v claude >/dev/null; then
 else
     vendor_install https://claude.ai/install.sh bash "$CLAUDE_VERSION"
 fi
+native_shadowed claude @anthropic-ai/claude-code
 say 'Claude authentication is manual. Configuration is handled by the dotfiles step.'
