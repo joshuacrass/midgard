@@ -82,7 +82,7 @@ bash bootstrap.sh --dry-run --only fish,tmux
 
 ### Existing configuration
 
-Identical files are left alone. Differing files produce a `PRESERVE` notice and are skipped. A successful bootstrap with these notices means reconciliation remains: inspect the differences before adopting repository configuration.
+Identical files are left alone. Differing files produce a `PRESERVE` notice and are skipped. A successful bootstrap with these notices means reconciliation remains: inspect the differences before adopting repository configuration. Add `--diff` to a dry-run to print how each preserved plain-text file differs; merged JSON settings are never printed.
 
 For example, after comparing the live and repository Fish configuration:
 
@@ -151,7 +151,15 @@ bash bootstrap.sh --dry-run
 
 Tests use temporary homes and synthetic input. Dry-run prints intended changes without downloading packages/installers, authenticating, or writing configuration. It reads installed package state, mise paths, and service status. ShellCheck is included in the base package list; `scripts/check.sh` requires it to be available.
 
-The current machine's dry-run and isolated safety tests have been exercised. A complete fresh-VM apply has **not** been performed. Before using this for disaster recovery, validate an actual rebuild on a disposable Ubuntu VM.
+The acceptance test applies the complete bootstrap on a fresh host:
+
+```sh
+bash tests/fresh-host.sh
+```
+
+It builds a minimal Ubuntu 24.04 systemd container holding only the prerequisites above, mounts this repository read-only, runs `bootstrap.sh --apply` including the Docker and Tailscale steps, requires the second dry-run to report no pending changes, and checks every tool against its pin. It needs Docker and network access and changes nothing on the host. GitHub Actions runs it on every push and weekly.
+
+The full apply last passed on 2026-09-16 (this container test; every step, no manual intervention). A container shares the host kernel, so a disposable VM remains the final check for the OS installation checklist and Tailscale authentication.
 
 ## Upstream installation references
 

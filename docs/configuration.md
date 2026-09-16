@@ -28,7 +28,7 @@ Compare only reviewed, shareable files; do not paste authentication files into l
 diff -u ~/.config/fish/config.fish config/fish/config.fish
 ```
 
-A content or permission difference is preserved unless `--replace-config` is explicitly selected. Applying that option backs up the original before an atomic file replacement. Configuration directories must not be symlinks. File permissions are taken from the repository sources; local backup files are restricted to the owner.
+A content or permission difference is preserved unless `--replace-config` is explicitly selected. `bootstrap.sh --dry-run --diff` prints the difference for plain-text files. Applying that option backs up the original before an atomic file replacement. Configuration directories must not be symlinks. File permissions are taken from the repository sources; local backup files are restricted to the owner.
 
 Claude settings use a recursive merge. Existing arrays (including permission rules and hooks) are retained and missing entries are appended; unrelated keys survive. Repository scalar values take precedence only during explicit replacement. The helper never prints settings contents. The original settings file is backed up before a merge that changes it.
 
