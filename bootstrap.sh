@@ -3,6 +3,7 @@ set -euo pipefail
 ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 export MIDGARD_MODE=dry-run MIDGARD_REPLACE_CONFIG=0
 steps=(system docker mise languages yarn github tailscale claude codex fish tmux dotfiles)
+sudo_steps=(system docker github tailscale)
 selected=()
 while (($#)); do
     case $1 in
@@ -29,6 +30,14 @@ for step in "${selected[@]}"; do
 done
 source "$ROOT/scripts/lib.sh"
 cd "$HOME"
+# Confirm sudo before the first privileged step rather than stalling on a prompt mid-run.
+if [[ $MIDGARD_MODE == apply ]]; then
+    for step in "${sudo_steps[@]}"; do
+        if ((${#selected[@]})) && [[ " ${selected[*]} " != *" $step "* ]]; then continue; fi
+        sudo -v || die 'sudo access is required for the selected steps.'
+        break
+    done
+fi
 for step in "${steps[@]}"; do
     if ((${#selected[@]})) && [[ " ${selected[*]} " != *" $step "* ]]; then continue; fi
     printf '\n== %s (%s) ==\n' "$step" "$MIDGARD_MODE"
