@@ -32,6 +32,14 @@ Avoid dumping long sequences of commands where failure in an early step invalida
 - Remote networking uses Tailscale
 - Persistent development happens inside tmux.
 
+## Verification
+
+Before committing, run `bash scripts/check.sh` (syntax, ShellCheck, unit tests).
+
+After changing any step under `scripts/` or anything it installs, run `bash tests/fresh-host.sh`: it applies the whole bootstrap on a fresh Ubuntu 24.04 container and must finish with no pending changes on its second pass.
+
+`bash bootstrap.sh --dry-run` against the live machine should report only `OK`, `KEEP`, and `already` lines, plus any `PRESERVE` notice you can explain.
+
 ## Safety
 
 Never commit:
