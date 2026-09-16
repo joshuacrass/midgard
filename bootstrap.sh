@@ -37,6 +37,12 @@ if [[ $MIDGARD_MODE == apply ]]; then
         sudo -v || die 'sudo access is required for the selected steps.'
         break
     done
+    # Keep a private transcript of every apply; a failed rebuild is when it matters most.
+    log_dir=$HOME/.local/state/midgard/logs
+    install -d -m 0700 "$log_dir"
+    log=$log_dir/$(date -u +%Y%m%dT%H%M%SZ)-$$.log
+    exec > >(tee -a -- "$log") 2>&1
+    say "Transcript: $log"
 fi
 for step in "${steps[@]}"; do
     if ((${#selected[@]})) && [[ " ${selected[*]} " != *" $step "* ]]; then continue; fi

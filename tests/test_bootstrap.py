@@ -114,7 +114,7 @@ class BootstrapTests(unittest.TestCase):
             result = subprocess.run(['bash', str(ROOT / 'bootstrap.sh'), '--dry-run'],
                                     env=env, capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
-            node = tomllib.load(open(ROOT / 'config/mise/config.toml', 'rb'))['tools']['node']
+            node = tomllib.loads((ROOT / 'config/mise/config.toml').read_text())['tools']['node']
             self.assertIn(f'mise install node@{node}', result.stdout)
             self.assertIn('CREATE', result.stdout)
             self.assertEqual(list(home.iterdir()), [])
@@ -126,13 +126,18 @@ class BootstrapTests(unittest.TestCase):
             command = ['bash', str(ROOT / 'bootstrap.sh'), '--apply', '--only', 'fish,tmux,dotfiles']
             first = subprocess.run(command, env=env, capture_output=True, text=True)
             self.assertEqual(first.returncode, 0, first.stderr)
-            snapshot = {str(p.relative_to(home)): (p.read_bytes(), p.stat().st_mtime_ns)
-                        for p in home.rglob('*') if p.is_file()}
+            logs = home / '.local/state/midgard/logs'
+
+            def snapshot():
+                return {str(p.relative_to(home)): (p.read_bytes(), p.stat().st_mtime_ns)
+                        for p in home.rglob('*') if p.is_file() and logs not in p.parents}
+            before = snapshot()
             second = subprocess.run(command, env=env, capture_output=True, text=True)
             self.assertEqual(second.returncode, 0, second.stderr)
-            self.assertEqual(snapshot, {str(p.relative_to(home)): (p.read_bytes(), p.stat().st_mtime_ns)
-                                       for p in home.rglob('*') if p.is_file()})
+            self.assertEqual(before, snapshot())
             self.assertFalse((home / '.local/state/midgard/backups').exists())
+            self.assertEqual(len(list(logs.iterdir())), 2)
+            self.assertEqual(logs.stat().st_mode & 0o777, 0o700)
 
     def test_invalid_step_stops_before_changes(self):
         result = subprocess.run(['bash', str(ROOT / 'bootstrap.sh'), '--apply', '--only', 'system,typo'],
