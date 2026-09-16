@@ -73,11 +73,7 @@ Midgard
 
 SSH should always use the Tailscale hostname rather than LAN addresses whenever possible.
 
-Current hostname:
-
-```
-midgard.tail6ef7a8.ts.net
-```
+The host is reached by its Tailscale MagicDNS name, which derives from the OS hostname `midgard`. The tailnet name itself is not recorded here.
 
 No inbound SSH ports should be exposed to the public Internet.
 
