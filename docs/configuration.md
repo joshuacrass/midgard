@@ -5,7 +5,8 @@ Captured from the working Midgard server on 2026-09-15.
 | Repository source | Destination | Capture details |
 | --- | --- | --- |
 | `config/tmux/tmux.conf` | `~/.tmux.conf` | Exact copy |
-| Remaining `config/tmux/` files | `~/.config/tmux/` | Exact helpers, palettes, and cobalt2 selection; modes preserved |
+| Remaining `config/tmux/` files | `~/.config/tmux/` | Exact helpers and palettes; modes preserved |
+| `config/tmux/.current-theme` | `~/.config/tmux/.current-theme` | Default theme (cobalt2), seeded only when missing; `theme.sh` rewrites it on every switch |
 | `config/fish/config.fish` | `~/.config/fish/config.fish` | Replaces the hardcoded username with `$HOME`, adds local binaries to PATH, guards mise activation |
 | `config/mise/config.toml` | `~/.config/mise/config.toml` | Pins the installed versions instead of `latest`, `lts`, and `3.13` |
 | `config/claude/statusline.sh` | `~/.claude/statusline.sh` | Exact copy; executable |
