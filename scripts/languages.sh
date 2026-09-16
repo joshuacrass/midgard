@@ -6,10 +6,5 @@ while read -r tool version; do
     else
         run mise install "$tool@$version"
     fi
-done < <("$PYTHON" - "$ROOT/config/mise/config.toml" <<'PY'
-import sys,tomllib
-for name,version in tomllib.load(open(sys.argv[1],'rb'))['tools'].items():
-    print(name,version)
-PY
-)
+done < <(pinned_tools)
 deploy "$ROOT/config/mise/config.toml" "$HOME/.config/mise/config.toml"

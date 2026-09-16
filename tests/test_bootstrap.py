@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import subprocess
 import tempfile
+import tomllib
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -113,7 +114,8 @@ class BootstrapTests(unittest.TestCase):
             result = subprocess.run(['bash', str(ROOT / 'bootstrap.sh'), '--dry-run'],
                                     env=env, capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertIn('mise install node@24.21.0', result.stdout)
+            node = tomllib.load(open(ROOT / 'config/mise/config.toml', 'rb'))['tools']['node']
+            self.assertIn(f'mise install node@{node}', result.stdout)
             self.assertIn('CREATE', result.stdout)
             self.assertEqual(list(home.iterdir()), [])
 

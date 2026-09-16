@@ -44,10 +44,19 @@ deploy() {
     [[ ${3:-} == create-only ]] && args+=(--create-only)
     "$PYTHON" "${args[@]}"
 }
+# Print "tool version" for each runtime pinned in config/mise/config.toml.
+pinned_tools() {
+    "$PYTHON" - "$ROOT/config/mise/config.toml" <<'PY'
+import sys, tomllib
+for name, version in tomllib.load(open(sys.argv[1], 'rb'))['tools'].items():
+    print(name, version)
+PY
+}
+pinned_version() { pinned_tools | awk -v tool="$1" '$1 == tool { print $2 }'; }
 node_path() {
     if command -v mise >/dev/null; then
         local p
-        p=$(mise where "node@$("$PYTHON" -c 'import tomllib,sys; print(tomllib.load(open(sys.argv[1],"rb"))["tools"]["node"])' "$ROOT/config/mise/config.toml")" 2>/dev/null) || true
+        p=$(mise where "node@$(pinned_version node)" 2>/dev/null) || true
         [[ -z $p ]] || export PATH="$p/bin:$PATH"
     fi
 }
