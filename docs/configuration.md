@@ -18,7 +18,7 @@ Fish universal variables are deliberately excluded: `fish_variables` is shell-ma
 
 Codex rewrites its own `config.toml` (for example when a project is trusted), so the repository file only seeds a new host. An existing file is reported as `KEEP` and is not compared or replaced, even with `--replace-config`. To adopt a changed repository preference on an existing host, edit `~/.codex/config.toml` by hand.
 
-Global Git settings (`init.defaultBranch`, `core.editor`, `fetch.prune`, `rerere.enabled`) are listed in `scripts/dotfiles.sh`. Each is set only when unset; a different existing value is reported as `PRESERVE` and left alone. Git identity is never set by bootstrap.
+Global Git settings (`init.defaultBranch`, `core.editor`, `fetch.prune`, `rerere.enabled`) are listed in `scripts/git.sh`. Each is set only when unset; a different existing value is reported as `PRESERVE` and left alone. Git identity is never set by bootstrap.
 
 ## Comparing and adopting changes
 
@@ -39,7 +39,7 @@ At capture time, the executable confirmation hook existed, but the user settings
 After inspecting the repository settings and hook, preview adoption with:
 
 ```sh
-bash bootstrap.sh --dry-run --only dotfiles --replace-config
+bash bootstrap.sh --dry-run --only claude --replace-config
 ```
 
 Apply the same scoped command with `--apply` when ready, then inspect Claude's hooks in a new session. Existing permissions and other hooks survive the merge.

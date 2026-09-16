@@ -7,4 +7,8 @@ else
     vendor_install https://claude.ai/install.sh bash "$CLAUDE_VERSION"
 fi
 native_shadowed claude @anthropic-ai/claude-code
-say 'Claude authentication is manual. Configuration is handled by the dotfiles step.'
+# Deploy the referenced commands before the settings that enable them.
+deploy "$ROOT/config/claude/statusline.sh" "$HOME/.claude/statusline.sh"
+deploy "$ROOT/config/claude/hooks/confirm-push-merge.sh" "$HOME/.claude/hooks/confirm-push-merge.sh"
+deploy "$ROOT/config/claude/settings.json" "$HOME/.claude/settings.json" merge-json
+say 'Claude authentication is manual.'

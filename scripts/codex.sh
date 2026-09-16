@@ -8,4 +8,6 @@ else
     vendor_install https://chatgpt.com/codex/install.sh sh --release "$CODEX_VERSION"
 fi
 native_shadowed codex @openai/codex
-say 'Codex authentication is manual. Preferences are seeded by the dotfiles step; credentials are never copied.'
+# Codex rewrites its own config, so the repository only seeds a new host.
+deploy "$ROOT/config/codex/config.toml" "$HOME/.codex/config.toml" create-only
+say 'Codex authentication is manual; credentials are never copied.'

@@ -2,7 +2,7 @@
 set -euo pipefail
 ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 export MIDGARD_MODE=dry-run MIDGARD_REPLACE_CONFIG=0 MIDGARD_DIFF=0
-steps=(system docker mise languages yarn github tailscale claude codex fish tmux dotfiles)
+steps=(system docker mise languages yarn github git tailscale claude codex fish tmux)
 sudo_steps=(system docker github tailscale)
 selected=()
 while (($#)); do

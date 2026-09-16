@@ -153,7 +153,12 @@ class BootstrapTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             home = Path(directory)
             env = dict(os.environ, HOME=directory, PATH='/usr/bin:/bin')
-            command = ['bash', str(ROOT / 'bootstrap.sh'), '--apply', '--only', 'fish,tmux,dotfiles']
+            # Stub agent binaries so the agent steps configure without downloading installers.
+            (home / '.local/bin').mkdir(parents=True)
+            for name in ('claude', 'codex'):
+                (home / '.local/bin' / name).write_text('#!/bin/sh\n')
+                (home / '.local/bin' / name).chmod(0o755)
+            command = ['bash', str(ROOT / 'bootstrap.sh'), '--apply', '--only', 'git,claude,codex,fish,tmux']
             first = subprocess.run(command, env=env, capture_output=True, text=True)
             self.assertEqual(first.returncode, 0, first.stderr)
             logs = home / '.local/state/midgard/logs'

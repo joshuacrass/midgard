@@ -60,10 +60,10 @@ Apply it once the plan is understood:
 bash bootstrap.sh --apply
 ```
 
-The ordered steps are `system,docker,mise,languages,yarn,github,tailscale,claude,codex,fish,tmux,dotfiles`. To run a subset:
+The ordered steps are `system,docker,mise,languages,yarn,github,git,tailscale,claude,codex,fish,tmux`. Each step installs and configures one concern. To run a subset:
 
 ```sh
-bash bootstrap.sh --dry-run --only fish,tmux,dotfiles
+bash bootstrap.sh --dry-run --only fish,tmux
 ```
 
 `--only` keeps dependency order but does not add prerequisites. An installation failure stops the run; fix the cause and rerun the affected step. Missing packages are installed with `apt-get --no-remove`; existing packages are not explicitly upgraded. Package dependencies can still be updated by APT.
