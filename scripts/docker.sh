@@ -3,6 +3,10 @@ source "$(dirname -- "${BASH_SOURCE[0]}")/lib.sh"
 for package in docker.io docker-compose docker-compose-v2 docker-doc podman-docker containerd runc; do
     installed "$package" && die "Conflicting $package is installed; manual review required. Nothing removed."
 done
+# The Ubuntu installer offers Docker as a snap, which dpkg cannot see.
+if command -v snap >/dev/null && snap list docker >/dev/null 2>&1; then
+    die 'Conflicting docker snap is installed; manual review required. Nothing removed.'
+fi
 arch=$(dpkg --print-architecture)
 apt_source download.docker.com https://download.docker.com/linux/ubuntu/gpg \
     /etc/apt/keyrings/docker.asc /etc/apt/sources.list.d/midgard-docker.list \
