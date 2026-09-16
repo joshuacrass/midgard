@@ -33,10 +33,12 @@ done
 source "$ROOT/scripts/lib.sh"
 cd "$HOME"
 # Confirm sudo before the first privileged step rather than stalling on a prompt mid-run.
+# A real command, not sudo -v: with the default verifypw=all, -v demands a password whenever
+# any rule lacks NOPASSWD, which breaks cloud images where sudo itself never prompts.
 if [[ $MIDGARD_MODE == apply ]]; then
     for step in "${sudo_steps[@]}"; do
         if ((${#selected[@]})) && [[ " ${selected[*]} " != *" $step "* ]]; then continue; fi
-        sudo -v || die 'sudo access is required for the selected steps.'
+        sudo true || die 'sudo access is required for the selected steps.'
         break
     done
     # Keep a private transcript of every apply; a failed rebuild is when it matters most.
