@@ -38,9 +38,14 @@ Bootstrap depends on these installer choices and never changes them:
 
 - **Hostname `midgard`.** The Tailscale MagicDNS name derives from it. Remove the previous Midgard node in the Tailscale admin console before authenticating the rebuilt machine, otherwise it becomes `midgard-1`.
 - **Your normal user in the `sudo` group.** Bootstrap runs as that user and calls `sudo` for packages and services. Do not enable a root login.
-- **SSH public key imported during installation.** Ubuntu records the installer's password-authentication choice in `/etc/ssh/sshd_config.d/50-cloud-init.conf`; confirm password authentication is disabled after the first login.
+- **SSH public key imported during installation.** Ubuntu records the installer's password-authentication choice in `/etc/ssh/sshd_config.d/50-cloud-init.conf`. sshd keeps the first value it reads and includes drop-ins in name order, so enforce key-only login regardless of that choice, after confirming a key login works from another terminal:
+
+  ```sh
+  printf 'PasswordAuthentication no\nKbdInteractiveAuthentication no\n' | sudo tee /etc/ssh/sshd_config.d/10-midgard.conf
+  sudo sshd -t && sudo systemctl reload ssh
+  ```
 - **No snaps from the "Featured Server Snaps" screen.** Docker comes from Docker's repository; the docker step refuses to proceed beside a Docker snap.
-- **OpenSSH server enabled.** The working host also runs `unattended-upgrades` and `ufw`, both Ubuntu defaults. Bootstrap manages neither; record the firewall rules with `sudo ufw status verbose` and restore them by hand.
+- **OpenSSH server enabled.** The working host also has `unattended-upgrades` running and `ufw` installed but inactive, both Ubuntu Server defaults; there are no firewall rules to restore. Inbound access is limited by the network and Tailscale, not by a host firewall. Bootstrap manages neither.
 - **Timezone `Etc/UTC`, locale `en_US.UTF-8`.** These are the captured values; nothing in the repository depends on them.
 - **Install Git after the first login:** `sudo apt-get install -y git`. Python 3.12 is already present on Ubuntu Server.
 
