@@ -310,6 +310,86 @@ The original Midgard installed both with `npm install -g` inside the mise-manage
 
 ---
 
+# Decision 011
+
+## Title
+
+Bootstrap Is Read-Only by Default
+
+## Date
+
+2026-09-16
+
+## Status
+
+Accepted
+
+## Decision
+
+`bootstrap.sh` performs a dry-run unless `--apply` is given. Every mutating command is printed before it runs, and configuration is never replaced without `--replace-config`.
+
+## Why
+
+- the first run on any host, including the working Midgard, is safe to execute blind
+- the printed plan is the review step; there is no separate plan format to maintain
+- a rerun after a partial failure can be inspected before it continues
+
+---
+
+# Decision 012
+
+## Title
+
+Configuration Is Copied and Preserved, Not Symlinked
+
+## Date
+
+2026-09-16
+
+## Status
+
+Accepted
+
+## Decision
+
+Repository configuration is copied into place by `scripts/deploy-config.py`. A destination that differs is preserved and reported; it is replaced only with `--replace-config`, after a private timestamped backup. Files that applications rewrite themselves (Codex preferences, the tmux theme selection) are seeded once and never replaced.
+
+## Why
+
+- the live machine keeps working if the repository checkout moves, breaks, or is deleted
+- local edits are surfaced as `PRESERVE` notices and `--diff` output instead of silently changing the repository through a symlink
+- applications that rewrite their own files cannot corrupt tracked files
+- the cost is a deliberate reconciliation step: edit in the repository, then apply with `--replace-config`
+
+---
+
+# Decision 013
+
+## Title
+
+Pin Tool Versions, Not Packages or Installer Scripts
+
+## Date
+
+2026-09-16
+
+## Status
+
+Accepted
+
+## Decision
+
+Runtime versions are pinned in `config/mise/config.toml` and installer versions in `config/versions.sh`. Ubuntu, Docker, Tailscale, and GitHub CLI packages come from their configured APT repositories without version pins. Vendor installer scripts (mise, Claude Code, Codex) are fetched at apply time, verified by the vendors' own checksums, and passed the pinned version.
+
+## Why
+
+- a server should receive security updates; frozen APT versions would rot and eventually fail to install
+- the installers are the vendors' supported entry points and change more often than the version arguments they accept
+- what matters for reproducibility is the tool version that ends up installed, and that is pinned
+- existing installations are retained, so a rebuild and an upgrade are the same command
+
+---
+
 # Future Decisions
 
 Future architecture decisions should be added to this document rather than modifying historical entries.
