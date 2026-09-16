@@ -7,6 +7,8 @@ import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
+# Match scripts/lib.sh: the system interpreter is the one a fresh host has.
+PYTHON = '/usr/bin/python3'
 
 
 class DeployTests(unittest.TestCase):
@@ -21,7 +23,7 @@ class DeployTests(unittest.TestCase):
 
     def deploy(self, *args, success=True):
         result = subprocess.run(
-            ['python3', str(ROOT / 'scripts/deploy-config.py'), str(self.src), str(self.dst), *args],
+            [PYTHON, str(ROOT / 'scripts/deploy-config.py'), str(self.src), str(self.dst), *args],
             env=self.env, capture_output=True, text=True)
         self.assertEqual(result.returncode == 0, success, result.stderr)
         return result.stdout

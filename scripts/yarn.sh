@@ -11,7 +11,7 @@ fi
 # Corepack install --global selects the default without changing project manifests.
 # Do not invoke yarn during inspection: Corepack can download on first invocation.
 cache=${COREPACK_HOME:-${XDG_CACHE_HOME:-$HOME/.cache}/node/corepack}
-current=$(python3 - "$cache/lastKnownGood.json" <<'PY'
+current=$("$PYTHON" - "$cache/lastKnownGood.json" <<'PY'
 import json,sys
 from pathlib import Path
 p=Path(sys.argv[1])

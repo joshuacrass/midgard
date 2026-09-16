@@ -6,6 +6,8 @@ MIDGARD_MODE=${MIDGARD_MODE:-dry-run}
 MIDGARD_REPLACE_CONFIG=${MIDGARD_REPLACE_CONFIG:-0}
 [[ $MIDGARD_MODE == apply || $MIDGARD_MODE == dry-run ]] || { echo 'Invalid mode' >&2; exit 2; }
 export PATH="$HOME/.local/bin:$PATH"
+# System interpreter: a fresh host has no mise Python, so never rely on the active shell's python3.
+PYTHON=/usr/bin/python3
 say() { printf '%s\n' "$*"; }
 die() { say "ERROR: $*" >&2; exit 1; }
 run() {
@@ -38,12 +40,12 @@ deploy() {
     [[ $MIDGARD_REPLACE_CONFIG == 1 ]] && args+=(--replace)
     [[ ${3:-} == merge-json ]] && args+=(--merge-json)
     [[ ${3:-} == create-only ]] && args+=(--create-only)
-    python3 "${args[@]}"
+    "$PYTHON" "${args[@]}"
 }
 node_path() {
     if command -v mise >/dev/null; then
         local p
-        p=$(mise where "node@$(python3 -c 'import tomllib,sys; print(tomllib.load(open(sys.argv[1],"rb"))["tools"]["node"])' "$ROOT/config/mise/config.toml")" 2>/dev/null) || true
+        p=$(mise where "node@$("$PYTHON" -c 'import tomllib,sys; print(tomllib.load(open(sys.argv[1],"rb"))["tools"]["node"])' "$ROOT/config/mise/config.toml")" 2>/dev/null) || true
         [[ -z $p ]] || export PATH="$p/bin:$PATH"
     fi
 }

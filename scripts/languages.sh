@@ -7,7 +7,7 @@ while read -r tool version; do
     else
         run mise install "$tool@$version"
     fi
-done < <(python3 - "$ROOT/config/mise/config.toml" <<'PY'
+done < <("$PYTHON" - "$ROOT/config/mise/config.toml" <<'PY'
 import sys,tomllib
 for name,version in tomllib.load(open(sys.argv[1],'rb'))['tools'].items():
     print(name,version)

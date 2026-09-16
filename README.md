@@ -114,7 +114,7 @@ To undo an explicitly replaced configuration file, compare it with the correspon
 ## Validation
 
 ```sh
-python3 tests/test_bootstrap.py
+/usr/bin/python3 tests/test_bootstrap.py
 ```
 
 ```sh
