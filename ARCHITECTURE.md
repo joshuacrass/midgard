@@ -192,13 +192,15 @@ Containers should be managed with Docker Compose whenever practical.
 
 ```
 midgard/
-├── AGENTS.md
-├── ARCHITECTURE.md
-├── README.md
-├── bootstrap.sh
-├── config/
-├── docs/
-└── scripts/
+├── AGENTS.md          instructions for coding agents working here
+├── ARCHITECTURE.md    this document
+├── DECISIONS.md       why things are the way they are
+├── README.md          rebuild instructions
+├── bootstrap.sh       runs the steps in order; dry-run by default
+├── config/            shareable configuration deployed by the steps
+├── docs/              capture and deployment details
+├── scripts/           one step per file plus lib.sh and deploy-config.py
+└── tests/             offline unit tests and the fresh-host acceptance test
 ```
 
 This repository is the source of truth for Midgard.
@@ -207,22 +209,22 @@ This repository is the source of truth for Midgard.
 
 # Bootstrap Strategy
 
-The system should be bootstrapped using many small scripts rather than one large script.
-
-Example:
+The system is bootstrapped by many small scripts rather than one large script. Each step installs and configures one concern, in this order:
 
 ```
 scripts/
-    install-system-tools.sh
-    install-docker.sh
-    install-mise.sh
-    install-node.sh
-    install-go.sh
-    install-python.sh
-    install-claude.sh
-    install-codex.sh
-    configure-fish.sh
-    configure-tmux.sh
+    system.sh      base packages
+    docker.sh      Docker Engine and Compose from Docker's repository
+    mise.sh        runtime manager
+    languages.sh   Node, Go, Python pinned in config/mise/config.toml
+    yarn.sh        Yarn through Corepack
+    github.sh      GitHub CLI
+    git.sh         global Git preferences
+    tailscale.sh   Tailscale from its repository
+    claude.sh      Claude Code and its settings, hooks, status line
+    codex.sh       Codex and its seeded preferences
+    fish.sh        Fish startup file
+    tmux.sh        tmux configuration and themes
 ```
 
 Scripts should be:
