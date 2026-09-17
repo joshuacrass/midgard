@@ -34,6 +34,15 @@ Bootstrap does not configure SSH, router forwarding, addresses, disks, ESXi, or 
 
 ### OS installation checklist
 
+Size the VM before installing. Bootstrap adds about 2 GB to a 5 GB Ubuntu Server install and downloads about 1.5 GB; the Claude installer needs 512 MB of free memory. The production numbers are the current Midgard VM, which runs the full tool set, Docker infrastructure, and both coding agents with headroom.
+
+| Purpose | vCPU | Memory | Disk |
+| --- | --- | --- | --- |
+| Disposable test rebuild | 2 | 4 GB | 25 GB (installer default) |
+| Production Midgard | 4 | 16 GB | 48 GB |
+
+Only the disk grows with use: container volumes and local model weights are the items to plan for. The production disk is a quarter used after bootstrap and several repositories. Memory is the first limit for future AI workloads.
+
 Bootstrap depends on these installer choices and never changes them:
 
 - **Hostname `midgard`.** The Tailscale MagicDNS name derives from it. Remove the previous Midgard node in the Tailscale admin console before authenticating the rebuilt machine, otherwise it becomes `midgard-1`.
